@@ -1,5 +1,5 @@
 - name: Upload APK
-  uses: actions/upload-artifact@v2
+  uses: actions/upload-artifact@v3
   with:
     name: kivy-apk
-    path: bin/*.apk
+    path: ./bin/*.apk
