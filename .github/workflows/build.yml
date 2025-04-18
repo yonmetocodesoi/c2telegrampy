@@ -1,7 +1,10 @@
-name: Build Kivy APK
+name: Build Android APK
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -10,41 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
+    - name: Check out code
+      uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
+        python-version: '3.8'  # Você pode mudar para a versão que está usando
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install buildozer cython
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y python3-pip
+        pip install --upgrade pip
+        pip install buildozer
+        sudo apt-get install -y python3-venv
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libsdl2-dev
+        sudo apt-get install -y libjpeg-dev
+        sudo apt-get install -y libfreetype6-dev
 
-    - name: Install system dependencies
+    - name: Set up Buildozer
       run: |
-        sudo apt update
-        sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools git libncurses5
+        mkdir -p ~/.buildozer
+        buildozer init  # Se você já tiver o arquivo buildozer.spec, você pode pular essa linha
 
-    - name: Initialize buildozer.spec
+    - name: Build APK with Buildozer
       run: |
-        if [ ! -f buildozer.spec ]; then
-          buildozer init
-        fi
-
-    - name: Set permissions
-      run: chmod +x ./main.py
-
-    - name: Build APK
-      run: |
-        buildozer -v android debug
-
-    - name: Upload APK
-      if: success()
-      uses: actions/upload-artifact@v3
-      with:
-        name: kivy-apk
-        path: bin/*.apk
-        
+        cd path/to/your/project  # Substitua pelo caminho correto do seu projeto
+        buildozer -v android debug  # Você pode alterar a opção para release, se necessário
